@@ -1,0 +1,100 @@
+name: CMake on multiple platforms
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  linux-x86-64:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Build
+      run: |
+        cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=dist .
+        make install
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: trie-linux-x86-64-release
+        path: dist/*
+
+  windows-x86-64:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Build
+      run: |
+        cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=dist -G "Unix Makefiles" .
+        make install
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: trie-windows-x86-64-release
+        path: dist/*
+
+  macos-x86-64:
+    runs-on: macos-13
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Build
+      run: |
+        cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=dist .
+        make install
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: trie-macos-x86-64-release
+        path: dist/*
+
+  macos-arm-64:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: build
+      run: |
+        cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=dist .
+        make install
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: trie-macos-arm-64-release
+        path: dist/*
+
+  android-arm-64:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: setup android sdk
+      uses: nttld/setup-ndk@v1
+      id: setup-ndk
+      with:
+        ndk-version: r26d
+        add-to-path: false
+
+    - name: build
+      run: |
+        cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=dist .
+        make install
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: trie-android-arm-64-release
+        path: dist/*
